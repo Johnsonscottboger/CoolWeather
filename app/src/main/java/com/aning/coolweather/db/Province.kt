@@ -6,7 +6,7 @@ import org.litepal.crud.LitePalSupport
  * 省份
  */
 data class Province(
-        var id: Int,
+        var id: Int = 0,
         var provinceName: String,
         var provinceCode: Int
 ) : LitePalSupport()

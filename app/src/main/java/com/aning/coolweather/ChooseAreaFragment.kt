@@ -2,6 +2,7 @@ package com.aning.coolweather
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -73,6 +74,14 @@ public class ChooseAreaFragment : Fragment() {
                 LEVEL_CITY -> {
                     this._selectedCity = this._cityList.get(position);
                     queryCounties();
+                }
+
+                LEVEL_COUNTY -> {
+                    val weatherId = this._countyList.get(position).weatherId;
+                    val intent = Intent(activity, WeatherActivity::class.java);
+                    intent.putExtra("weather_id", weatherId);
+                    this.startActivity(intent);
+                    activity?.finish();
                 }
             }
         }
@@ -178,6 +187,7 @@ public class ChooseAreaFragment : Fragment() {
             }
 
             override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace();
                 activity?.runOnUiThread {
                     closeProgressDialog();
                     Toast.makeText(context, "加载失败", Toast.LENGTH_SHORT)

@@ -4,8 +4,12 @@ import android.text.TextUtils
 import com.aning.coolweather.db.City
 import com.aning.coolweather.db.County
 import com.aning.coolweather.db.Province
+import com.aning.coolweather.gson.Weather
+import com.google.gson.Gson
 import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
+import java.lang.Exception
 
 public object Utility {
 
@@ -16,7 +20,7 @@ public object Utility {
     public fun handleProvinceResponse(response: String): Boolean {
         if (response.isEmpty())
             return false;
-        try {
+        return try {
             val allProvinces = JSONArray(response);
             for (i in 0 until allProvinces.length()) {
                 val provinceObject = allProvinces.getJSONObject(i) ?: continue;
@@ -24,10 +28,10 @@ public object Utility {
                         provinceCode = provinceObject.getInt("id"))
                         .save();
             }
-            return true;
+            true;
         } catch (e: JSONException) {
             e.printStackTrace();
-            return false;
+            false;
         }
     }
 
@@ -39,7 +43,7 @@ public object Utility {
     public fun handleCityResponse(response: String, provinceId: Int): Boolean {
         if (response.isEmpty())
             return false;
-        try {
+        return try {
             val allCities = JSONArray(response);
             for (i in 0 until allCities.length()) {
                 val cityObject = allCities.getJSONObject(i) ?: continue;
@@ -48,10 +52,10 @@ public object Utility {
                         provinceId = provinceId)
                         .save();
             }
-            return true;
+            true;
         } catch (ex: JSONException) {
             ex.printStackTrace();
-            return false;
+            false;
         }
     }
 
@@ -63,7 +67,7 @@ public object Utility {
     public fun handleCountyResponse(response: String, cityId: Int): Boolean {
         if (response.isEmpty())
             return false;
-        try {
+        return try {
             val allCounties = JSONArray(response);
             for (i in 0 until allCounties.length()) {
                 val countyObject = allCounties.getJSONObject(i) ?: continue;
@@ -72,10 +76,25 @@ public object Utility {
                         cityId = cityId)
                         .save();
             }
-            return true;
+            true;
         } catch (ex: JSONException) {
             ex.printStackTrace();
-            return false;
+            false;
+        }
+    }
+
+    /**
+     * 将响应的JSON数据转换为 Weather 实例
+     */
+    public fun handleWeatherResponse(response: String): Weather {
+        return try {
+            val jsonObject = JSONObject(response);
+            val jsonArray = jsonObject.getJSONArray("HeWeather");
+            val weatherContent = jsonArray.getJSONObject(0).toString();
+            Gson().fromJson<Weather>(weatherContent, Weather::class.java);
+        } catch (ex: Exception){
+            ex.printStackTrace();
+            Weather();
         }
     }
 }

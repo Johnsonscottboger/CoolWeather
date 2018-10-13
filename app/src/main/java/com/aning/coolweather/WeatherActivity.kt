@@ -163,7 +163,7 @@ class WeatherActivity : AppCompatActivity() {
     }
 
     /**
-     * 处理并显示 Weather 实例中的数据
+     * 处理并显示 [Weather] 实例中的数据
      */
     private fun showWeatherInfo(weather: Weather) {
         val intent = Intent(this, AutoUpdateWeatherService::class.java);

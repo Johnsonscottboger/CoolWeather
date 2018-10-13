@@ -68,6 +68,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 权限申请结果
+     */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
             1 -> {
@@ -90,6 +93,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 请求位置信息
+     */
     private fun requestLocation() {
         this._locationClient = LocationClient(this.applicationContext);
         this._locationClient.registerLocationListener(this::onReceiveLocation);
@@ -99,6 +105,10 @@ class MainActivity : AppCompatActivity() {
         this._locationClient.start();
     }
 
+    /**
+     * 显示 [WeatherActivity]
+     * @param weatherId 指定的天气id
+     */
     private fun showWeatherActivity(weatherId: String) {
         val intent = Intent(this, WeatherActivity::class.java);
         intent.putExtra("weather_id", weatherId);

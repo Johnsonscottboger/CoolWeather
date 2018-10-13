@@ -170,6 +170,11 @@ public class ChooseAreaFragment : Fragment() {
         }
     }
 
+    /**
+     * 从服务段请求省市县数据
+     * @param url 指定访问的url
+     * @param type 指定请求的数据类型:province, city, county
+     */
     private fun queryFromServer(url: String, type: String) {
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(url, object : Callback {
@@ -204,10 +209,16 @@ public class ChooseAreaFragment : Fragment() {
         });
     }
 
+    /**
+     * 显示进度弹框
+     */
     private fun showProgressDialog() {
         this._progressBar.show();
     }
 
+    /**
+     * 关闭进度弹框
+     */
     private fun closeProgressDialog() {
         this._progressBar.dismiss();
     }

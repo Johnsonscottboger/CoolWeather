@@ -77,11 +77,18 @@ public class ChooseAreaFragment : Fragment() {
                 }
 
                 LEVEL_COUNTY -> {
-                    val weatherId = this._countyList.get(position).weatherId;
-                    val intent = Intent(activity, WeatherActivity::class.java);
-                    intent.putExtra("weather_id", weatherId);
-                    this.startActivity(intent);
-                    activity?.finish();
+                    val weatherId = this._countyList[position].weatherId;
+                    when (activity) {
+                        is MainActivity -> {
+                            val intent = Intent(activity, WeatherActivity::class.java);
+                            intent.putExtra("weather_id", weatherId);
+                            this.startActivity(intent);
+                            activity?.finish();
+                        }
+                        is WeatherActivity -> {
+                            (activity as WeatherActivity).switchCounty(weatherId);
+                        }
+                    }
                 }
             }
         }

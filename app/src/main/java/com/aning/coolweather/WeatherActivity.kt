@@ -6,6 +6,7 @@ import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.view.GravityCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
@@ -18,6 +19,7 @@ import com.aning.coolweather.util.Utility
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.now.*
+import kotlinx.android.synthetic.main.title.*
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -58,17 +60,28 @@ class WeatherActivity : AppCompatActivity() {
         this._carWashText = this.findViewById(R.id.car_wash_text);
         this._sportText = this.findViewById(R.id.sport_text);
 
+        this.swipe_refresh.setColorSchemeResources(R.color.colorPrimary);
         val prefs = PreferenceManager.getDefaultSharedPreferences(this);
         val weatherString = prefs.getString("weather", null);
+        val weatherId:String;
         if (weatherString != null) {
             //已经有缓存
             val weather = Utility.handleWeatherResponse(weatherString);
+            weatherId = weather.basic.weatherId;
             this.showWeatherInfo(weather);
         } else {
             //没有缓存, 前往服务器查询
-            val weatherId = this.intent.getStringExtra("weather_id");
+            weatherId = this.intent.getStringExtra("weather_id");
             this._weatherLayout.visibility = View.INVISIBLE;
             this.requestWeather(weatherId);
+        }
+
+        this.swipe_refresh.setOnRefreshListener {
+            requestWeather(weatherId);
+        }
+
+        this.nav_button.setOnClickListener {
+            this.drawer_layout.openDrawer(GravityCompat.START);
         }
 
         val bingPic = prefs.getString("bing_pic", null);
@@ -79,6 +92,17 @@ class WeatherActivity : AppCompatActivity() {
         } else {
             loadBingPic();
         }
+    }
+
+
+    /**
+     * 切换城市
+     * @param weatherId 指定要切换的天气 id
+     */
+    public fun switchCounty(weatherId: String){
+        this.drawer_layout.closeDrawers();
+        this.swipe_refresh.isRefreshing = true;
+        this.requestWeather(weatherId);
     }
 
 
@@ -105,6 +129,7 @@ class WeatherActivity : AppCompatActivity() {
                             Toast.makeText(this@WeatherActivity, "获取天气数据失败", Toast.LENGTH_SHORT)
                                     .show();
                         }
+                        this@WeatherActivity.swipe_refresh.isRefreshing = false;
                     }
                 }
             }
@@ -114,6 +139,7 @@ class WeatherActivity : AppCompatActivity() {
                 runOnUiThread {
                     Toast.makeText(this@WeatherActivity, "获取天气数据失败", Toast.LENGTH_SHORT)
                             .show();
+                    this@WeatherActivity.swipe_refresh.isRefreshing = false;
                 }
             }
         });

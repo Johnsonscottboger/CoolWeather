@@ -1,6 +1,7 @@
 package com.aning.coolweather
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
@@ -14,6 +15,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.aning.coolweather.gson.Weather
+import com.aning.coolweather.service.AutoUpdateWeatherService
 import com.aning.coolweather.util.HttpUtil
 import com.aning.coolweather.util.Utility
 import com.bumptech.glide.Glide
@@ -39,6 +41,8 @@ class WeatherActivity : AppCompatActivity() {
     private lateinit var _carWashText: TextView;
     private lateinit var _sportText: TextView;
 
+    private lateinit var _weatherId: String;
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= 21) {
@@ -63,21 +67,21 @@ class WeatherActivity : AppCompatActivity() {
         this.swipe_refresh.setColorSchemeResources(R.color.colorPrimary);
         val prefs = PreferenceManager.getDefaultSharedPreferences(this);
         val weatherString = prefs.getString("weather", null);
-        val weatherId:String;
+
         if (weatherString != null) {
             //已经有缓存
             val weather = Utility.handleWeatherResponse(weatherString);
-            weatherId = weather.basic.weatherId;
+            this._weatherId = weather.basic.weatherId;
             this.showWeatherInfo(weather);
         } else {
             //没有缓存, 前往服务器查询
-            weatherId = this.intent.getStringExtra("weather_id");
+            this._weatherId = this.intent.getStringExtra("weather_id");
             this._weatherLayout.visibility = View.INVISIBLE;
-            this.requestWeather(weatherId);
+            this.requestWeather(this._weatherId);
         }
 
         this.swipe_refresh.setOnRefreshListener {
-            requestWeather(weatherId);
+            requestWeather(this._weatherId);
         }
 
         this.nav_button.setOnClickListener {
@@ -99,8 +103,9 @@ class WeatherActivity : AppCompatActivity() {
      * 切换城市
      * @param weatherId 指定要切换的天气 id
      */
-    public fun switchCounty(weatherId: String){
+    public fun switchCounty(weatherId: String) {
         this.drawer_layout.closeDrawers();
+        this._weatherId = weatherId;
         this.swipe_refresh.isRefreshing = true;
         this.requestWeather(weatherId);
     }
@@ -119,7 +124,7 @@ class WeatherActivity : AppCompatActivity() {
                 else {
                     val weather = Utility.handleWeatherResponse(responseText!!);
                     runOnUiThread {
-                        if (weather.status.equals("ok")) {
+                        if (weather.status == "ok") {
                             val editor = PreferenceManager.getDefaultSharedPreferences(this@WeatherActivity)
                                     .edit();
                             editor.putString("weather", responseText);
@@ -151,6 +156,8 @@ class WeatherActivity : AppCompatActivity() {
      * 处理并显示 Weather 实例中的数据
      */
     private fun showWeatherInfo(weather: Weather) {
+        val intent = Intent(this, AutoUpdateWeatherService::class.java);
+        this.startService(intent);
         val cityName = weather.basic.cityName;
         val updateTime = weather.basic.update.updateTime.split(" ")[1];
         val degree = "${weather.now.temperature}℃";

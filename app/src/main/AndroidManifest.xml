@@ -3,15 +3,26 @@
           package="com.aning.coolweather">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
             android:name="org.litepal.LitePalApplication"
             android:allowBackup="true"
             android:icon="@mipmap/logo"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
+            android:roundIcon="@mipmap/logo"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <meta-data android:name="com.baidu.lbsapi.API_KEY"
+                   android:value="dVs9kstXgdYNh5GSG1OZRd03CnXwiOQQ"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -21,14 +32,15 @@
         </activity>
         <activity android:name=".WeatherActivity">
         </activity>
-        <activity android:name=".Main2Activity">
-        </activity>
 
         <service
                 android:name=".service.AutoUpdateWeatherService"
                 android:enabled="true"
                 android:exported="true">
         </service>
+
+        <service android:name="com.baidu.location.f" android:enabled="true"
+                 android:process=":remote"/>
     </application>
 
 </manifest>

@@ -1,5 +1,7 @@
 package com.aning.coolweather
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -14,10 +16,16 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import com.aning.coolweather.db.City
+import com.aning.coolweather.db.County
+import com.aning.coolweather.db.Province
 import com.aning.coolweather.gson.Weather
 import com.aning.coolweather.service.AutoUpdateWeatherService
 import com.aning.coolweather.util.HttpUtil
 import com.aning.coolweather.util.Utility
+import com.baidu.location.BDLocation
+import com.baidu.location.LocationClient
+import com.baidu.location.LocationClientOption
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.now.*
@@ -25,9 +33,11 @@ import kotlinx.android.synthetic.main.title.*
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
+import org.litepal.LitePal
 import java.io.IOException
 
 class WeatherActivity : AppCompatActivity() {
+
 
     private lateinit var _weatherLayout: ScrollView;
     private lateinit var _titleCity: TextView;
@@ -98,18 +108,18 @@ class WeatherActivity : AppCompatActivity() {
         }
     }
 
-
     /**
      * 切换城市
      * @param weatherId 指定要切换的天气 id
      */
     public fun switchCounty(weatherId: String) {
         this.drawer_layout.closeDrawers();
-        this._weatherId = weatherId;
-        this.swipe_refresh.isRefreshing = true;
-        this.requestWeather(weatherId);
+        if (this._weatherId != weatherId) {
+            this._weatherId = weatherId;
+            this.swipe_refresh.isRefreshing = true;
+            this.requestWeather(weatherId);
+        }
     }
-
 
     /**
      * 根据天气 id 请求城市天气信息

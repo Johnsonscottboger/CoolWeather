@@ -141,7 +141,7 @@ public class ChooseAreaFragment : Fragment() {
             this._currentLevel = LEVEL_CITY;
         } else {
             val provinceCode = this._selectedProvince.provinceCode;
-            val url = "http://guolin.tech/api/china/" + provinceCode;
+            val url = "http://guolin.tech/api/china/$provinceCode";
             queryFromServer(url, "city");
         }
     }
@@ -165,7 +165,7 @@ public class ChooseAreaFragment : Fragment() {
         } else {
             val provinceCode = this._selectedProvince.provinceCode;
             val cityCode = this._selectedCity.cityCode;
-            val url = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
+            val url = "http://guolin.tech/api/china/$provinceCode/$cityCode";
             queryFromServer(url, "county");
         }
     }
